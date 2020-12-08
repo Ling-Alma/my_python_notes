@@ -19,11 +19,11 @@ full_dataset = datasets.load_diabetes()
 # The standard notation for a dictionary is {key1: value1, key2: value2}
 
 # Next, looking at the keys of the database lets us dig 1 level in. we can print out just the keys.
-# print('dictionary keys:', full_dataset.keys())
+print('dictionary keys:', full_dataset.keys())
 
 # If we want, we can access just one entry in the dictionary using the key. A useful one is the key DESCR.
 # Print that out using the dictionary [] notation.
-# print(full_dataset['DESCR'])
+print(full_dataset['DESCR'])
 
 # We could also extract the data and assign
 # it to a data_array variable for inspection.
@@ -93,7 +93,14 @@ plt.yticks(())
 
 # CLASS EXERCISE:
 # report the r2 for a LinearRegression model that uses all of the independent variables provided by the dataset.
+# Don't worry about splitting into test and train for now. Just load the whole dataset with load_diabetes(return_X_y=True).
 
-
+diabetes_X, diabetes_y = datasets.load_diabetes(return_X_y=True)
+regression_object = linear_model.LinearRegression()
+regression_object.fit(diabetes_X, diabetes_y)
+diabetes_y_pred = regression_object.predict(diabetes_X)
+r2_score = r2_score(diabetes_y, diabetes_y_pred)
+print('r2_score', r2_score)
+print('coefficients', regression_object.coef_)
 
 
