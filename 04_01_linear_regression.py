@@ -35,14 +35,14 @@ diabetes_X, diabetes_y = datasets.load_diabetes(return_X_y=True)
 
 # Look at diabetes_X and notice there are lots of independent variables. Rather than printing the whole
 # Array, which would be messy, just look at the .shape attribute.l
-# print('diabetes_X', diabetes_X.shape)
+print('diabetes_X', diabetes_X.shape)
 
 # For now, we're just going to use a single one for simplicity. The following line extracts just the second column and
 # reshapes it to be the shape expected by the LinearRegression model. IGNORE UNDERSTANDING THIS FOR NOW if you want
 # because we will dig in to reshaping later.
 
 diabetes_X = diabetes_X[:, np.newaxis, 2]
-# print('diabetes_X', diabetes_X.shape)
+#print('diabetes_X', diabetes_X.shape)
 
 # Next we are going to do a very rudimentary split of the data into training and testing sets using
 # array slice notation. The following lines assigns the last all but the last 20 lines to the TRAIN set
@@ -79,7 +79,7 @@ mse = mean_squared_error(diabetes_y_test, diabetes_y_pred)
 # print('Mean squared error:',  mse)
 
 # Or perhaps we want the r2 for the second independent variable (which is the only one we used)
-r2_d2_score = r2_score(diabetes_y_test, diabetes_y_pred)
+
 # print('Coefficient of determination:', r2_d2_score)
 
 # Finally, to prove to ourselves that we know what we are doing, let's plot this.
@@ -93,7 +93,10 @@ plt.yticks(())
 
 # CLASS EXERCISE:
 # report the r2 for a LinearRegression model that uses all of the independent variables provided by the dataset.
-
-
-
-
+data_array = full_dataset['data']
+diabetes_X1, diabetes_y1 = datasets.load_diabetes(return_X_y=True)
+regression_object = linear_model.LinearRegression()
+regression_object.fit(diabetes_X1, diabetes_y1)
+diabetes_y_pred = regression_object.predict(diabetes_X1)
+r2_d2_score = r2_score(diabetes_y1, diabetes_y_pred)
+print(r2_d2_score)

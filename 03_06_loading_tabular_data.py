@@ -24,7 +24,7 @@ df2 = pd.DataFrame({'A': 1.,
                     'E': pd.Categorical(["test", "train", "test", "train"]),
                     'F': 'foo'})
 
-# df.head()
+df.head()
 # print(df.index)
 # print(df.columns)
 df.describe()
@@ -162,7 +162,7 @@ df = pd.DataFrame({'A': ['one', 'one', 'two', 'three'] * 3,
                    'E': np.random.randn(12)})
 
 # print(df) # SPREADSHEET VIEW
-df = pd.pivot_table(df, values='D', index=['A', 'B'], columns=['C'])
+df1 = pd.pivot_table(df, values='D', index=['A', 'B'], columns=['C'])
 # print(df) # Multiindexed (Pivot table) view.
 
 # NOTICE that a pivot table is just the above date but where specific things have been made into multi-level
