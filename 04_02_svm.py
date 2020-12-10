@@ -5,7 +5,6 @@ import numpy as np
 import scipy
 import sklearn
 from sklearn import datasets
-
 import pandas as pd
 import os
 
@@ -14,15 +13,15 @@ import os
 digits = datasets.load_digits()
 
 # First, take a look at the raw python object:
-print('digits\n', digits)
+# print('digits\n', digits)
 
 # Not super helpful unless you're very good at reading python dictionary notation
 # Fortunately, one of the entries in this dataset is a description. Let's read that.
-# print('DESCR\n', digits['DESCR'])
+print('DESCR\n', digits['DESCR'])
 
 # Now that we're oriented, also look at one particular image of a digit, just so you know what
 # it actually looks like. Below, we print just the first (index = 0) numeral of the 5620 they provide.
-# print('digits.images[0]\n', digits.images[0])
+print('digits.images[0]\n', digits.images[0])
 
 # If you squint, maybe you can tel what image it is, but let's plot it to be sure.
 import matplotlib
@@ -65,7 +64,7 @@ classifier = svm.SVC(gamma=0.001)
 
 # For now, let's just look at the data again. Rather than print it out, I really just want the shape
 # so that i don't get inundated with text.
-# print('digits.images shape', digits.images.shape)
+print('digits.images shape', digits.images.shape)
 
 # So we need to get it into a shape of n "samples" by 64 "features"
 n_samples = len(digits.images)
@@ -86,7 +85,7 @@ X_train, X_test, y_train, y_test = train_test_split(
     data, digits.target, test_size=0.5, shuffle=False)
 
 print('X_train', X_train)
-print('y_train', y_train) # The actual handwritten digits
+print('y_train', y_train)
 
 
 # Finally, now that we've split it, we can call the classifier's fit method which takes the TRAINING data as input.
@@ -124,12 +123,12 @@ print("Classification report:\n", metrics.classification_report(y_test, predicte
 # in sklearn.
 
 disp = metrics.plot_confusion_matrix(classifier, X_test, y_test)
-disp.figure_.suptitle("Confusion Matrix") # Number 3 is the easiest to be misread.
+disp.figure_.suptitle("Confusion Matrix")
 
-# print("Confusion matrix:\n", disp.confusion_matrix)
+print("Confusion matrix:\n", disp.confusion_matrix)
 
 # Finally, show it so that you can look at it and see how good we did.
-# plt.show()
+plt.show()
 
 
 
