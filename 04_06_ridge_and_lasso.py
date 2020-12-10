@@ -28,16 +28,16 @@ print(feature_names)
 # To speed up calculation, we're going to just use the first 150 observations
 # using numpy slice notation to grab them out of the X, y
 
-X = X[:150]
+X = X[:150] # rows 0:150
 y = y[:150]
 
 # Class exercise: Review of OLS. Report back the MSE when of y versus the predicted y when you use the X and y variables above.
 # You might want to utilize the scikit-learn linear regression tools, in particular the following functions:
 #
-# linear_model.LinearRegression()
-# .fit(X, y)
-# .predict(X)
-# mean_squared_error(y, y_pred)
+reg = linear_model.LinearRegression()
+fited_reg = reg.fit(X, y)
+y_pred= fited_reg.predict(X)
+mean_squared_error(y, y_pred)
 
 
 # In addition to the scikit-learn OLS, we also will be using today
@@ -51,7 +51,7 @@ from statsmodels.api import OLS
 model = OLS(y, X)
 fitted_model = model.fit()
 result = fitted_model.summary()
-# print(result)
+print(result)
 
 # Today's goal, however, is to do Lasso this same dataset.
 # To start, lets create a Lasso object. Notice that we are not
@@ -60,7 +60,7 @@ result = fitted_model.summary()
 lasso = Lasso(random_state=0, max_iter=10000)
 
 # Instead, we are going to test a variety of different alphas, as here:
-alphas = np.logspace(-3, -0.5, 30)
+alphas = np.logspace(-3, -0.5, 30) # this is the lambda on the slides
 
 # We are going to be passing this range of tuning parameters to a GridSearch function
 # that will test which works best when cross-validation methods are applied.
@@ -87,13 +87,14 @@ clf.fit(X, y)
 
 # Some relevant results are as below, which we'll extract and assign to lists.
 scores = clf.cv_results_['mean_test_score']
-scores_std = clf.cv_results_['std_test_score']
+scores_std = clf.cv_results_['std_test_score'] # standard deviation of the scores
 
 # CLASS Activity: break out into groups and explore the scores and alphas lists we've created.
 # Identify which alpha is the best, based on the MSE score returned. One way to consider doing this
 # would be to create a for loop to iterate through a range(len(scores)): object, reporting the
 # alphas and scores. save the optimal alpha as chosen_alpha.
 
+alphas[np.argmax(scores)]
 
 chosen_alpha = 0.5 # This will be set for real from class activity
 
@@ -115,7 +116,7 @@ for i in range(len(clf2.coef_)):
         selected_coefficient_indices.append(i)
 
 # This process led us to the following selected_coefficient_labels:
-# print('selected_coefficient_labels', selected_coefficient_labels)
+print('selected_coefficient_labels', selected_coefficient_labels)
 
 # For fun, let's plot the alphas, scores and a confidence range.
 # What does this show us about the optimal alpha and how it varies with score?
@@ -141,10 +142,10 @@ plt.xlim([alphas[0], alphas[-1]])
 # Finally, now that we have our selected labels, we can use them to select the numpy array
 # columns that we want to use for a post-LASSO run.
 new_x =X[:, selected_coefficient_indices]
-# print('new_x', new_x)
+print('new_x', new_x)
 
 # Plug this new x matrix into our statsmodels OLS function and print that out.
 # How is this better than a vanilla OLS?
 result = OLS(y, new_x).fit().summary()
-# print(result)
+print(result)
 
