@@ -1,3 +1,4 @@
+
 # Author: Justin A Johnson. Adapted from sklearn documentation and original content. License: Modified BSD License.
 
 import numpy as np
@@ -12,11 +13,11 @@ from sklearn.model_selection import train_test_split
 from sklearn.datasets import load_iris
 iris_dataset = load_iris()
 
-# print('iris_dataset', iris_dataset)
-#
-# print("Keys of iris_dataset:", (iris_dataset.keys()))
-# print("Target names:", iris_dataset['target_names'])
-# print("Shape of data:", iris_dataset['data'].shape)
+print('iris_dataset', iris_dataset)
+
+print("Keys of iris_dataset:", (iris_dataset.keys()))
+print("Target names:", iris_dataset['target_names'])
+print("Shape of data:", iris_dataset['data'].shape)
 
 
 
@@ -37,7 +38,7 @@ iris_dataframe = pd.DataFrame(X_train, columns=iris_dataset.feature_names)
 # create a scatter matrix from the dataframe, color by y_train
 pd.plotting.scatter_matrix(iris_dataframe, c=y_train, figsize=(15, 15),
  marker='o', hist_kwds={'bins': 20}, s=60,
- alpha=.8)
+ alpha=.8) # "c=y_train" makes different species to be plotted into different colors
 import matplotlib.pyplot as plt
 # plt.show()
 
@@ -73,7 +74,7 @@ knn.fit(X_train, y_train)
 # calculating the s
 
 X_new = np.array([[5, 2.9, 1, 0.2]])
-# print("X_new.shape: {}".format(X_new.shape))
+print("X_new.shape: {}".format(X_new.shape))
 
 prediction = knn.predict(X_new)
 
@@ -91,7 +92,7 @@ prediction = knn.predict(X_new)
 # was predicted:
 y_pred = knn.predict(X_test)
 
-# print("Test set predictions:\n {}".format(y_pred))
-#
-# print("Test set score: {:.2f}".format(knn.score(X_test, y_test)))
+print("Test set predictions:\n {}".format(y_pred))
+
+print("Test set score: {:.2f}".format(knn.score(X_test, y_test)))
 
