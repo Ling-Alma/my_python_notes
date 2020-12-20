@@ -17,7 +17,11 @@ X_train, X_test, y_train, y_test = train_test_split(cancer.data, cancer.target, 
 # built-in methods within scikit-learn.
 
 # Using numpy functions, compute the mean value per feature on the training set and the STD.
+print('X_train', X_train)
+
 mean_on_train = X_train.mean(axis=0)
+
+print('mean_on_train', mean_on_train)
 std_on_train = X_train.std(axis=0)
 
 # subtract the mean, and scale by inverse standard deviation, making it  mean=0 and std=1
@@ -54,4 +58,4 @@ plt.yticks(range(30), cancer.feature_names)
 plt.xlabel("Columns in weight matrix")
 plt.ylabel("Input feature")
 plt.colorbar()
-# plt.show()
+plt.show()
