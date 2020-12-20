@@ -1,4 +1,4 @@
-from sklearn.neural_network import MLPClassifier
+from sklearn.neural_network import MLPClassifier # Ctrl+B to check the codes
 from sklearn.datasets import make_moons, load_breast_cancer
 from sklearn.model_selection import train_test_split
 from matplotlib import pyplot as plt
@@ -34,16 +34,16 @@ mlp.fit(X_train_scaled, y_train)
 # of a floating point number. The Format method then places that floating point value
 # into that placeholder.
 
-# print("Accuracy on training set: {:.3f}".format(mlp.score(X_train_scaled, y_train)))
-# print("Accuracy on test set: {:.3f}".format(mlp.score(X_test_scaled, y_test)))
+print("Accuracy on training set: {:.3f}".format(mlp.score(X_train_scaled, y_train)))
+print("Accuracy on test set: {:.3f}".format(mlp.score(X_test_scaled, y_test)))
 
 # Other concepts discussed earlier, such as regularization, also apply here.
 # To illustrate, here we will set the alpha parameter to include a regulariazation term
 mlp = MLPClassifier(max_iter=1000, alpha=1, random_state=0)
 mlp.fit(X_train_scaled, y_train)
 
-# print("Accuracy on training set: {:.3f}".format(mlp.score(X_train_scaled, y_train)))
-# print("Accuracy on test set: {:.3f}".format(mlp.score(X_test_scaled, y_test)))
+print("Accuracy on training set: {:.3f}".format(mlp.score(X_train_scaled, y_train)))
+print("Accuracy on test set: {:.3f}".format(mlp.score(X_test_scaled, y_test)))
 
 # But what does a MLP Neural Net actually LOOK like?
 # Plot the coeffs_ array to find out:
