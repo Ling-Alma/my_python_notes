@@ -35,24 +35,10 @@ data_dir = '../../Data/assignment_06/soyo_tile'
 # paths.
 
 raster_paths = {}
-raster_paths['agb_observed_baccini_2000_30m'] = os.path.join(data_dir, "agb_observed_baccini_2000_30m.tif")
-
-raster_paths['CRFVOL_M_sl1_250m'] = os.path.join(data_dir, "CRFVOL_M_sl1_250m.tif")
-raster_paths['HISTPR_250m'] = os.path.join(data_dir, "HISTPR_250m.tif")
-raster_paths['OCDENS_M_sl1_250m'] = os.path.join(data_dir, "OCDENS_M_sl1_250m.tif")
-raster_paths['PHIHOX_M_sl1_250m'] = os.path.join(data_dir, "PHIHOX_M_sl1_250m.tif")
-raster_paths['roughness_30s'] = os.path.join(data_dir, "roughness_30s.tif")
-raster_paths['SLGWRB_250m'] = os.path.join(data_dir, "SLGWRB_250m.tif")
-raster_paths['SLTPPT_M_sl1_250m'] = os.path.join(data_dir, "SLTPPT_M_sl1_250m.tif")
-raster_paths['SNDPPT_M_sl1_250m'] = os.path.join(data_dir, "SNDPPT_M_sl1_250m.tif")
-raster_paths['terrain_ruggedness_index_30s'] = os.path.join(data_dir, "terrain_ruggedness_index_30s.tif")
-raster_paths['TEXMHT_M_sl1_250m'] = os.path.join(data_dir, "TEXMHT_M_sl1_250m.tif")
-raster_paths['wc2.0_bio_30s_01'] = os.path.join(data_dir, "wc2.0_bio_30s_01.tif")
-raster_paths['alt_30s'] = os.path.join(data_dir, "alt_30s.tif")
-raster_paths['AWCh1_M_sl1_250m'] = os.path.join(data_dir, "AWCh1_M_sl1_250m.tif")
-raster_paths['BDRICM_M_250m'] = os.path.join(data_dir, "BDRICM_M_250m.tif")
-raster_paths['BDRLOG_M_250m'] = os.path.join(data_dir, "BDRLOG_M_250m.tif")
-raster_paths['BLDFIE_M_sl1_250m'] = os.path.join(data_dir, "BLDFIE_M_sl1_250m.tif")
+a = os.listdir(data_dir)
+for f_name in os.listdir(data_dir):
+    if f_name.endswith('.tif'):
+        raster_paths[os.path.splitext(f_name)[0]] = os.path.join(data_dir, f_name)
 
 
 # Step 3: Our dependent variable will be 30 meter observations of carbon storage from
@@ -63,6 +49,12 @@ raster_paths['BLDFIE_M_sl1_250m'] = os.path.join(data_dir, "BLDFIE_M_sl1_250m.ti
 # Side note:
 # If you get an error like: "ERROR 4: This is a BigTIFF file.  BigTIFF is not supported by this version of GDAL and libtiff."
 # make sure you have conda installed gdal from the CONDA FORGE  using the command "conda install gdal -c conda-forge" option.
+rasters = {}
+for x in raster_paths:
+    rasters[x] = gdal.Open(raster_paths[x])
+
+carbon_raster = rasters['agb_observed_baccini_2000_30m'].GetRasterBand(1)
+carbon_array = carbon_raster.ReadAsArray()
 
 
 # Step 4, Create an empty numpy array (or full of zeros) of the right shape to house all our raster data.
@@ -72,6 +64,13 @@ raster_paths['BLDFIE_M_sl1_250m'] = os.path.join(data_dir, "BLDFIE_M_sl1_250m.ti
 # the dependent variable raster and the dictionary of inputs above.
 # Note that the n_vars should be the number of INDEPENDENT and DEPENDENT variables
 # report in your WORD DOCUMENT the size of the data_array you created.
+n_vars = len(rasters)
+n_obs = carbon_array.size
+
+data_array = np.empty((n_obs, n_vars))
+print('The number of observations is', n_obs)
+print('The number of variables is', n_vars)
+
 
 
 # Step 5, Iterate through the dictionary and load each raster as a 2d array, flatten it to 1d
@@ -85,24 +84,34 @@ raster_paths['BLDFIE_M_sl1_250m'] = os.path.join(data_dir, "BLDFIE_M_sl1_250m.ti
 # The first colon just denotes the whole row and the column index is an integer you could create pointing to the right row.
 # Some incomplete code to get you started is below.
 
-for name, path in raster_paths.items():
-    print('Loading', path)
-    flattened_raster_array = band.ReadAsArray().flatten()
-    data_array[:, col_index] = flattened_raster_array
+
+col_index = 0
+feature_names = []
+for name, raster in rasters.items():
+    print('Loading', name)
+    data_array[:, col_index] = raster.GetRasterBand(1).ReadAsArray().flatten()
+    col_index = col_index + 1
     feature_names.append(name)
 
 
 # Step 6, extract the first array row of the data_array and assign it to y. Assign the rest to X.
-
+y = data_array[: , 0]
+X = data_array[: , 1: ]
 
 # Step 7, split thre X and y into testing and training data such that
 # the training data is the first million pixels and the testing data is the next 200,000
 # Do this using numpy slice notaiton on the X and y variables you created.
+y_train = y[: 1000000]
+y_test = y[1000000 : 1200000]
+X_train = X[: 1000000 , ]
+X_test = X[1000000 : 1200000 ,]
 
 
 # Step 8 (optional but useful). To make the code run faster, we are going to
 # use every 10th pixel. We can easily get this via numpy slicing again, using
 # x_train[::10] to get every 10th pixel.
+X_train = X_train[::10]
+y_train = y_train[::10]
 
 
 # Step 9, create a Lasso object (using the default penalty term alpha)
@@ -110,7 +119,9 @@ for name, path in raster_paths.items():
 # and print out a vector of predicted carbon values. Also print out the score
 # using the lasso object's .score() method on the TESTING data.
 # Add the fitted lasso score to your WORD DOCUMENT.
-
+carbon_lasso = Lasso(random_state=0, max_iter=10000).fit(X_train, y_train)
+print('The first 10 predicted values from the default alpha(=1.0) Lasso are: ', carbon_lasso.predict(X_train[1:10,]))
+print('The score of the default alpha(=1.0) Lasso is ',carbon_lasso.score(X_test, y_test))
 
 # Step 10, optional and just for fun. To view how our projections LOOK, we can
 # create a predicted matrix on the whole X, reshape it back into the
@@ -118,13 +129,13 @@ for name, path in raster_paths.items():
 # to visualize how it looks. Note that this will only work if you name your objects
 # like mine.
 
-# full_prediction = fitted_lasso.predict(X)
-# prediction_2d = full_prediction.reshape(2000, 2000)
-# plt.imshow(prediction_2d)
-# plt.show()
-#
-# plt.imshow(array)
-# plt.show()
+full_prediction = carbon_lasso.predict(X)
+prediction_2d = full_prediction.reshape(2000, 2000)
+plt.imshow(prediction_2d)
+plt.show()
+
+plt.imshow(carbon_array)
+plt.show()
 
 
 # Step 11, Create a list of 30 alphas using np.logspace(-1, 3, 30). Using a for loop
@@ -133,19 +144,43 @@ for name, path in raster_paths.items():
 # value changes as alpha changes. Finally, extract the best alpha of the bunch.
 # Put the plot of alphas and their scores in your WORD DOCUMENT along with the value
 # of the optimal alpha.
-
+scores = np.empty((30, 1))
 alphas = np.logspace(-1, 3, 30)
+for i in range(0,30):
+    lasso = Lasso(alpha=alphas[i], random_state=0, max_iter=10000).fit(X_train, y_train)
+    scores[i] = lasso.score(X_test, y_test)
 
+plt.figure().set_size_inches(8, 6)
+plt.semilogx(alphas, scores)
+plt.ylabel('Score')
+plt.xlabel('alpha')
+plt.axhline(np.max(scores), linestyle='--', color='.5')
+plt.xlim([alphas[0], alphas[-1]])
+plt.show()
+
+best_alpha = alphas[np.argmax(scores)]
+print('The best alpha is ', best_alpha)
 
 # Step 12, rerun the lasso with that best value and identify all of the coefficiencts
 # that were "selected" ie had non-zero values. Save these coefficient indices and labels
 # to a list.
+carbon_lasso_best = Lasso(alpha= best_alpha, random_state=0, max_iter=10000).fit(X, y)
 
+selected_coefficient_labels = []
+selected_coefficient_indices = []
+for i in range(len(carbon_lasso_best.coef_)):
+    print('Coefficient', feature_names[i+1], 'was', carbon_lasso_best.coef_[i])
+    if abs(carbon_lasso_best.coef_[i]) > 0:
+        selected_coefficient_labels.append(feature_names[i+1])
+        selected_coefficient_indices.append(i)
+print('The selected variables are:', selected_coefficient_labels)
 
 # Step 13, Using Statsmodels, run an OLS version on the selected variables.
 # Copy and paste your resulting OLS.summary() table to your WORD DOCUMENT. In addition
 # add to your WORD DOCUMENT a descripting of how this result is better than a vanilla OLS.
-
-
-
-
+new_x =X[:, selected_coefficient_indices]
+result = OLS(y, new_x).fit().summary()
+print(result)
+print('This OLS is better than a vanilla OLS because it excluded variables that have zero coefficient in the Lasso regression.')
+print('Those are the variables that have lower predictive power and their coefficients were shrunk down to zero in the optimization.')
+print('Excluding these variables reduces the tendency of over-fitting the model.')
